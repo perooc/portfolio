@@ -1,42 +1,76 @@
 "use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    company: '',
-    message: ''
+    name: "",
+    email: "",
+    company: "",
+    message: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState('');
+  const [submitMessage, setSubmitMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error">(
+    "success",
+  );
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Aquí irá la lógica para enviar el formulario
-    // Por ahora solo simulamos el envío
-    setTimeout(() => {
-      setSubmitMessage('¡Gracias! Nos pondremos en contacto pronto.');
+    setSubmitMessage("");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessageType("success");
+        setSubmitMessage(
+          "¡Gracias! Tu mensaje ha sido enviado. Nos pondremos en contacto pronto.",
+        );
+        setFormData({ name: "", email: "", company: "", message: "" });
+      } else {
+        setMessageType("error");
+        setSubmitMessage(
+          data.error ||
+            "Hubo un error al enviar tu mensaje. Por favor intenta de nuevo.",
+        );
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setMessageType("error");
+      setSubmitMessage(
+        "Hubo un error al enviar tu mensaje. Por favor intenta de nuevo.",
+      );
+    } finally {
       setIsSubmitting(false);
-      setFormData({ name: '', email: '', company: '', message: '' });
-      
-      setTimeout(() => setSubmitMessage(''), 5000);
-    }, 1000);
+      setTimeout(() => setSubmitMessage(""), 7000);
+    }
   };
 
   return (
-    <section id="contacto" className="py-24 bg-gradient-to-br from-primary via-primary to-primary-light">
+    <section
+      id="contacto"
+      className="py-24 bg-gradient-to-br from-primary via-primary to-primary-light"
+    >
       <div className="max-w-4xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-12">
@@ -49,11 +83,17 @@ export default function ContactForm() {
         </div>
 
         {/* Formulario */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-2xl p-8 md:p-12">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-2xl shadow-2xl p-8 md:p-12"
+        >
           <div className="space-y-6">
             {/* Nombre */}
             <div>
-              <label htmlFor="name" className="block text-sm font-semibold text-primary mb-2">
+              <label
+                htmlFor="name"
+                className="block text-sm font-semibold text-primary mb-2"
+              >
                 Nombre completo *
               </label>
               <input
@@ -63,14 +103,17 @@ export default function ContactForm() {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-primary"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-gray-900"
                 placeholder="Tu nombre"
               />
             </div>
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-primary mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-primary mb-2"
+              >
                 Email *
               </label>
               <input
@@ -80,14 +123,17 @@ export default function ContactForm() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-primary"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-gray-900"
                 placeholder="tu@email.com"
               />
             </div>
 
             {/* Empresa */}
             <div>
-              <label htmlFor="company" className="block text-sm font-semibold text-primary mb-2">
+              <label
+                htmlFor="company"
+                className="block text-sm font-semibold text-primary mb-2"
+              >
                 Empresa
               </label>
               <input
@@ -96,14 +142,17 @@ export default function ContactForm() {
                 name="company"
                 value={formData.company}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-primary"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-gray-900"
                 placeholder="Nombre de tu empresa"
               />
             </div>
 
             {/* Mensaje */}
             <div>
-              <label htmlFor="message" className="block text-sm font-semibold text-primary mb-2">
+              <label
+                htmlFor="message"
+                className="block text-sm font-semibold text-primary mb-2"
+              >
                 Cuéntanos sobre tu proyecto *
               </label>
               <textarea
@@ -113,7 +162,7 @@ export default function ContactForm() {
                 onChange={handleChange}
                 required
                 rows={5}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all resize-none text-primary"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all resize-none text-gray-900"
                 placeholder="Describe brevemente lo que necesitas..."
               />
             </div>
@@ -122,14 +171,20 @@ export default function ContactForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-primary-light hover:bg-blue-600 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-light/50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary-light hover:bg-blue-600 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-light/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              {isSubmitting ? 'Enviando...' : 'Enviar mensaje'}
+              {isSubmitting ? "Enviando..." : "Enviar mensaje"}
             </button>
 
-            {/* Mensaje de confirmación */}
+            {/* Mensaje de confirmación/error */}
             {submitMessage && (
-              <div className="text-center text-green-600 font-semibold">
+              <div
+                className={`text-center font-semibold p-4 rounded-lg ${
+                  messageType === "success"
+                    ? "bg-green-50 text-green-700 border border-green-200"
+                    : "bg-red-50 text-red-700 border border-red-200"
+                }`}
+              >
                 {submitMessage}
               </div>
             )}
