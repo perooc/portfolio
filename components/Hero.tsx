@@ -1,17 +1,20 @@
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary to-primary-light overflow-hidden">
+    <section
+      id="inicio"
+      className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary to-primary-light overflow-hidden"
+    >
+      {" "}
       {/* Efecto de fondo con gradiente animado */}
-      <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 via-transparent to-primary-light/20"></div>
-      
+      <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 via-transparent to-primary-light/20" />
       {/* Contenido principal */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 text-center">
         <div className="space-y-8">
           {/* Badge o etiqueta */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/20 border border-secondary/30 backdrop-blur-sm">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary" />
             </span>
             <span className="text-sm font-medium text-secondary">
               Soluciones SaaS de última generación
@@ -28,7 +31,7 @@ export default function Hero() {
 
           {/* Subtítulo */}
           <p className="text-xl md:text-2xl text-accent max-w-3xl mx-auto leading-relaxed">
-            Desarrollamos soluciones tecnológicas personalizadas que transforman 
+            Desarrollamos soluciones tecnológicas personalizadas que transforman
             la manera en que tu empresa opera y crece en el mundo digital.
           </p>
 
@@ -43,6 +46,7 @@ export default function Hero() {
                 →
               </span>
             </a>
+
             <a
               href="#servicios"
               className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg border border-white/20 backdrop-blur-sm transition-all duration-300"
@@ -50,27 +54,10 @@ export default function Hero() {
               Ver Servicios
             </a>
           </div>
-
-          {/* Stats o datos destacados */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-8 pt-16 max-w-4xl mx-auto">
-            <div className="space-y-2">
-              <p className="text-4xl font-bold text-secondary">50+</p>
-              <p className="text-accent text-sm">Proyectos Exitosos</p>
-            </div>
-            <div className="space-y-2">
-              <p className="text-4xl font-bold text-secondary">98%</p>
-              <p className="text-accent text-sm">Clientes Satisfechos</p>
-            </div>
-            <div className="space-y-2 col-span-2 md:col-span-1">
-              <p className="text-4xl font-bold text-secondary">24/7</p>
-              <p className="text-accent text-sm">Soporte Disponible</p>
-            </div>
-          </div>
         </div>
       </div>
-
       {/* Elemento decorativo inferior */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
     </section>
   );
 }
