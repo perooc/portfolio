@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
+import Process from "@/components/Process";
 import ContactForm from "@/components/ContactForm";
 import Footer from "@/components/Footer";
 
@@ -8,6 +9,7 @@ export default function Home() {
     <main>
       <Hero />
       <Features />
+      <Process />
       <ContactForm />
       <Footer />
     </main>
