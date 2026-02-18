@@ -1,13 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 export default function ContactForm() {
+  const { executeRecaptcha } = useGoogleReCaptcha();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     company: "",
     message: "",
+    website: "", // HONEYPOT - campo oculto
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,13 +34,34 @@ export default function ContactForm() {
     setIsSubmitting(true);
     setSubmitMessage("");
 
+    // HONEYPOT: Si el campo "website" está lleno, es un bot
+    if (formData.website) {
+      console.log("Bot detectado por honeypot");
+      setIsSubmitting(false);
+      // No mostramos error al bot para no revelar nuestra defensa
+      setMessageType("success");
+      setSubmitMessage("¡Gracias! Tu mensaje ha sido enviado.");
+      setTimeout(() => setSubmitMessage(""), 3000);
+      return;
+    }
+
     try {
+      // Ejecutar reCAPTCHA
+      if (!executeRecaptcha) {
+        throw new Error("reCAPTCHA no está disponible");
+      }
+
+      const recaptchaToken = await executeRecaptcha("contact_form");
+
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          recaptchaToken,
+        }),
       });
 
       const data = await response.json();
@@ -46,7 +71,13 @@ export default function ContactForm() {
         setSubmitMessage(
           "¡Gracias! Tu mensaje ha sido enviado. Nos pondremos en contacto pronto.",
         );
-        setFormData({ name: "", email: "", company: "", message: "" });
+        setFormData({
+          name: "",
+          email: "",
+          company: "",
+          message: "",
+          website: "",
+        });
       } else {
         setMessageType("error");
         setSubmitMessage(
@@ -103,6 +134,8 @@ export default function ContactForm() {
                 value={formData.name}
                 onChange={handleChange}
                 required
+                minLength={2}
+                maxLength={100}
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-gray-900"
                 placeholder="Tu nombre"
               />
@@ -142,8 +175,23 @@ export default function ContactForm() {
                 name="company"
                 value={formData.company}
                 onChange={handleChange}
+                maxLength={100}
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all text-gray-900"
                 placeholder="Nombre de tu empresa"
+              />
+            </div>
+
+            {/* HONEYPOT - Campo oculto */}
+            <div className="hidden" aria-hidden="true">
+              <label htmlFor="website">Website</label>
+              <input
+                type="text"
+                id="website"
+                name="website"
+                value={formData.website}
+                onChange={handleChange}
+                tabIndex={-1}
+                autoComplete="off"
               />
             </div>
 
@@ -161,10 +209,13 @@ export default function ContactForm() {
                 value={formData.message}
                 onChange={handleChange}
                 required
+                minLength={20}
+                maxLength={1000}
                 rows={5}
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none transition-all resize-none text-gray-900"
                 placeholder="Describe brevemente lo que necesitas..."
               />
+              <p className="text-sm text-gray-500 mt-1">Mínimo 20 caracteres</p>
             </div>
 
             {/* Botón de envío */}
@@ -188,6 +239,29 @@ export default function ContactForm() {
                 {submitMessage}
               </div>
             )}
+
+            {/* Aviso reCAPTCHA */}
+            <p className="text-xs text-gray-500 text-center">
+              Este sitio está protegido por reCAPTCHA y aplican la{" "}
+              <a
+                href="https://policies.google.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                Política de Privacidad
+              </a>{" "}
+              y los{" "}
+              <a
+                href="https://policies.google.com/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                Términos de Servicio
+              </a>{" "}
+              de Google.
+            </p>
           </div>
         </form>
       </div>
